@@ -1,0 +1,86 @@
+import React, { useState } from 'react';
+import { useProducts } from '../context/ProductContext';
+import ProductCard from '../components/ProductCard';
+import { Play, Music, PenTool, Video, Gamepad, Folder } from 'lucide-react';
+
+export default function Catalog() {
+    const { products } = useProducts();
+    const [activeTab, setActiveTab] = useState('All');
+
+    // Added 'Flash Sale' to categories
+    const categories = ['All', 'Flash Sale', 'Streaming', 'Design', 'Editing', 'Music', 'Gaming', 'Other'];
+
+    const filteredProducts = products.filter(p => {
+        if (activeTab === 'All') return true;
+        if (activeTab === 'Flash Sale') {
+            // Check if product has active discount
+            const now = new Date();
+            const isDiscountActive = p.discount_percent > 0 &&
+                (!p.discount_deadline || new Date(p.discount_deadline) > now);
+            return isDiscountActive;
+        }
+        return p.category === activeTab;
+    });
+
+    const getIcon = (type, color) => {
+        // Basic icon mapping, can be expanded
+        const imgStyle = { width: '100%', height: '100%', objectFit: 'contain' };
+        switch (type.toLowerCase()) {
+            case 'netflix': return <img src="/logos/netflix.png" alt="Netflix" style={imgStyle} />;
+            case 'canva': return <img src="/logos/canva.png" alt="Canva" style={imgStyle} />;
+            case 'capcut': return <img src="/logos/capcut.png" alt="CapCut" style={imgStyle} />;
+            case 'spotify': return <span style={{ fontSize: 32 }}>🎧</span>;
+            default: return <span style={{ fontSize: 32 }}>📦</span>;
+        }
+    };
+
+    return (
+        <div className="container" style={{ paddingTop: '120px', paddingBottom: '4rem' }}>
+            <div className="section-header">
+                <span className="section-badge">Katalog Lengkap</span>
+                <h1 className="section-title">Semua <span className="gradient-text">Produk</span></h1>
+                <p className="section-desc">Telusuri semua produk digital terbaik kami berdasarkan kategori.</p>
+            </div>
+
+            {/* Tabs */}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '1rem',
+                flexWrap: 'wrap',
+                marginBottom: '3rem'
+            }}>
+                {categories.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveTab(cat)}
+                        className={`btn ${activeTab === cat ? 'btn-primary' : 'btn-secondary'}`}
+                        style={{ minWidth: '100px', justifyContent: 'center' }}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            {/* Grid */}
+            <div className="products-grid">
+                {filteredProducts.length > 0 ? (
+                    filteredProducts.map(product => (
+                        <ProductCard
+                            key={product.id}
+                            {...product}
+                            icon={product.image_url
+                                ? <img src={product.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
+                                : getIcon(product.iconType, product.color)
+                            }
+                        />
+                    ))
+                ) : (
+                    <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', opacity: 0.5 }}>
+                        <p>Belum ada produk di kategori ini.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
