@@ -70,42 +70,55 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                     {productCount} Produk Tersedia
                 </p>
 
-                {/* Preview Section */}
-                {previewItems.length > 0 && (
+                {/* Preview Section - Product List */}
+                {previewItems.length > 0 ? (
                     <div style={{
                         display: 'flex',
-                        justifyContent: 'center',
-                        gap: '8px',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
                         marginBottom: '1.5rem',
-                        marginTop: 'auto'
+                        marginTop: 'auto',
+                        width: '100%'
                     }}>
                         {previewItems.map((p, i) => (
                             <div key={i} style={{
-                                width: '32px', height: '32px',
-                                borderRadius: '8px',
-                                background: 'rgba(255,255,255,0.1)',
-                                overflow: 'hidden',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                fontSize: '0.8rem',
+                                padding: '0.4rem 0.6rem',
+                                background: 'rgba(255,255,255,0.03)',
+                                borderRadius: '6px',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                color: 'var(--text-secondary)'
                             }}>
-                                {p.image_url ? (
-                                    <img src={p.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                ) : (
-                                    <span style={{ fontSize: '0.6rem', color: p.color || 'white' }}>Prod</span>
-                                )}
+                                <span style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '65%'
+                                }}>
+                                    {p.title}
+                                </span>
+                                <span style={{ color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
+                                    {p.price_numeric > 0
+                                        ? `Rp ${p.price_numeric.toLocaleString('id-ID')}`
+                                        : 'Gratis'}
+                                </span>
                             </div>
                         ))}
                         {products.length > 4 && (
                             <div style={{
-                                width: '32px', height: '32px',
-                                borderRadius: '8px',
-                                background: 'rgba(255,255,255,0.05)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.7rem', color: 'var(--text-secondary)'
+                                textAlign: 'center',
+                                fontSize: '0.75rem',
+                                color: 'var(--text-secondary)',
+                                marginTop: '0.2rem'
                             }}>
-                                +{products.length - 4}
+                                +{products.length - 4} opsi lainnya
                             </div>
                         )}
+                    </div>
+                ) : (
+                    <div style={{ marginBottom: '1.5rem', marginTop: 'auto', opacity: 0.5, fontSize: '0.8rem' }}>
+                        Belum ada produk
                     </div>
                 )}
 
