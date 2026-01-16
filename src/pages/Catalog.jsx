@@ -86,12 +86,13 @@ export default function Catalog() {
             <div className="products-grid">
                 {/* 1. Show Subcategories first (unless Flash Sale) */}
                 {activeTab !== 'Flash Sale' && currentSubcategories.map(sub => {
-                    const count = products.filter(p => p.subcategory_id === sub.id).length;
+                    const subProducts = products.filter(p => p.subcategory_id === sub.id);
                     return (
                         <SubcategoryCard
                             key={sub.id}
                             subcategory={sub}
-                            productCount={count}
+                            productCount={subProducts.length}
+                            products={subProducts}
                             onClick={() => handleSubClick(sub)}
                         />
                     );

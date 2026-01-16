@@ -17,10 +17,10 @@ export default function AdminDashboard() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isVoucherEditModalOpen, setIsVoucherEditModalOpen] = useState(false);
 
-    // === CATEGORY FORM STATE ===
     const [newCategory, setNewCategory] = useState('');
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [newSubcategoryParent, setNewSubcategoryParent] = useState('');
+    const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null); // New Banner State
 
     // === PRODUCT FORM STATE ===
     const [formData, setFormData] = useState({
@@ -496,12 +496,36 @@ export default function AdminDashboard() {
                                     style={inputStyle}
                                 />
                             </div>
+                            <div>
+                                <label style={labelStyle}>Banner Subkategori (Opsional)</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setNewSubcategoryBanner(e.target.files[0]);
+                                        }
+                                    }}
+                                    style={fileInputStyle}
+                                />
+                            </div>
                             <button
                                 onClick={async () => {
                                     if (newSubcategoryName.trim() && newSubcategoryParent) {
-                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent);
+                                        let bannerUrl = null;
+                                        if (newSubcategoryBanner) {
+                                            const fileName = `sub-banner-${Math.random()}.${newSubcategoryBanner.name.split('.').pop()}`;
+                                            const { error: uploadError } = await supabase.storage.from('images').upload(fileName, newSubcategoryBanner);
+                                            if (!uploadError) {
+                                                const { data } = supabase.storage.from('images').getPublicUrl(fileName);
+                                                bannerUrl = data.publicUrl;
+                                            }
+                                        }
+
+                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent, null, bannerUrl);
                                         if (res.success) {
                                             setNewSubcategoryName('');
+                                            setNewSubcategoryBanner(null);
                                             setShowSuccess(true);
                                         } else {
                                             alert(res.error);
