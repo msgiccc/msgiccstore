@@ -86,23 +86,25 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
 
                 {/* Preview Section - Product List */}
                 {previewItems.length > 0 ? (
+                    {/* Preview Section - Product List */ }
+                {previewItems.length > 0 ? (
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '0.5rem',
+                        gap: '0.4rem',
                         marginBottom: '1rem',
-                        marginTop: '1rem', // Spacing from title
+                        marginTop: '1.2rem',
                         width: '100%'
                     }}>
                         {previewItems.map((p, i) => (
                             <div key={i} style={{
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                fontSize: '0.8rem',
-                                padding: '0.4rem 0.6rem',
-                                background: 'rgba(255,255,255,0.03)',
-                                borderRadius: '6px',
+                                fontSize: '0.75rem',
+                                padding: '0.5rem 0.8rem',
+                                background: 'rgba(0,0,0,0.4)', // Darker background for contrast
+                                borderRadius: '10px',
                                 border: '1px solid rgba(255,255,255,0.05)',
-                                color: 'var(--text-secondary)'
+                                color: 'rgba(255,255,255,0.8)'
                             }}>
                                 <span style={{
                                     whiteSpace: 'nowrap',
@@ -112,7 +114,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                                 }}>
                                     {p.title}
                                 </span>
-                                <span style={{ color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
+                                <span style={{ color: cardColor, fontWeight: '600' }}>
                                     {p.price_numeric > 0
                                         ? `Rp ${p.price_numeric.toLocaleString('id-ID')}`
                                         : 'Gratis'}
@@ -122,9 +124,10 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                         {products.length > 4 && (
                             <div style={{
                                 textAlign: 'center',
-                                fontSize: '0.75rem',
+                                fontSize: '0.7rem',
                                 color: 'var(--text-secondary)',
-                                marginTop: '0.2rem'
+                                marginTop: '0.2rem',
+                                fontStyle: 'italic'
                             }}>
                                 +{products.length - 4} opsi lainnya
                             </div>
@@ -136,14 +139,23 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                     </div>
                 )}
 
+                {/* Button as simple text link for cleaner look */}
                 <button
-                    className="btn btn-primary"
                     style={{
+                        marginTop: 'auto',
                         width: '100%',
-                        justifyContent: 'center',
-                        background: `linear-gradient(90deg, ${cardColor}22, ${cardColor}44)`,
-                        border: `1px solid ${cardColor}44`
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--text-secondary)',
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        padding: '0.5rem',
+                        fontWeight: '500',
+                        opacity: 0.8,
+                        transition: 'opacity 0.2s'
                     }}
+                    onMouseEnter={e => e.target.style.opacity = '1'}
+                    onMouseLeave={e => e.target.style.opacity = '0.8'}
                 >
                     Lihat Pilihan
                 </button>
