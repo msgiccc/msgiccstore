@@ -20,7 +20,7 @@ export default function PriceList() {
     // Filter logic
     const filteredCategories = Object.keys(groupedProducts).reduce((acc, category) => {
         const filtered = groupedProducts[category].filter(p =>
-            p.title.toLowerCase().includes(searchTerm.toLowerCase())
+            (p.title || '').toLowerCase().includes(searchTerm.toLowerCase())
         );
         if (filtered.length > 0) acc[category] = filtered;
         return acc;

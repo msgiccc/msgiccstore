@@ -26,7 +26,7 @@ export default function Catalog() {
     const getIcon = (type, color) => {
         // Basic icon mapping, can be expanded
         const imgStyle = { width: '100%', height: '100%', objectFit: 'contain' };
-        switch (type.toLowerCase()) {
+        switch ((type || '').toLowerCase()) {
             case 'netflix': return <img src="/logos/netflix.png" alt="Netflix" style={imgStyle} />;
             case 'canva': return <img src="/logos/canva.png" alt="Canva" style={imgStyle} />;
             case 'capcut': return <img src="/logos/capcut.png" alt="CapCut" style={imgStyle} />;
