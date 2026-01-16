@@ -157,11 +157,12 @@ export function ProductProvider({ children }) {
     };
 
     // Subcategory CRUD
-    const addSubcategory = async (name, category, icon_url = null, banner_url = null) => {
+    // Subcategory CRUD
+    const addSubcategory = async (name, category, icon_url = null, banner_url = null, color = '#00C8FF') => {
         try {
             const { data, error } = await supabase
                 .from('subcategories')
-                .insert([{ name, category, icon_url, banner_url }])
+                .insert([{ name, category, icon_url, banner_url, color }])
                 .select();
             if (error) throw error;
             setSubcategories([...subcategories, data[0]]);

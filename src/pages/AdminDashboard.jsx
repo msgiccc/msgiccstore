@@ -20,7 +20,8 @@ export default function AdminDashboard() {
     const [newCategory, setNewCategory] = useState('');
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [newSubcategoryParent, setNewSubcategoryParent] = useState('');
-    const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null); // New Banner State
+    const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null);
+    const [newSubcategoryColor, setNewSubcategoryColor] = useState('#00C8FF'); // New Color State
 
     // === PRODUCT FORM STATE ===
     const [formData, setFormData] = useState({
@@ -509,6 +510,18 @@ export default function AdminDashboard() {
                                     style={fileInputStyle}
                                 />
                             </div>
+                            <div>
+                                <label style={labelStyle}>Warna Tema</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <input
+                                        type="color"
+                                        value={newSubcategoryColor}
+                                        onChange={(e) => setNewSubcategoryColor(e.target.value)}
+                                        style={{ width: '50px', height: '40px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                                    />
+                                    <span style={{ color: 'var(--text-secondary)' }}>{newSubcategoryColor}</span>
+                                </div>
+                            </div>
                             <button
                                 onClick={async () => {
                                     if (newSubcategoryName.trim() && newSubcategoryParent) {
@@ -522,10 +535,11 @@ export default function AdminDashboard() {
                                             }
                                         }
 
-                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent, null, bannerUrl);
+                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent, null, bannerUrl, newSubcategoryColor);
                                         if (res.success) {
                                             setNewSubcategoryName('');
                                             setNewSubcategoryBanner(null);
+                                            setNewSubcategoryColor('#00C8FF');
                                             setShowSuccess(true);
                                         } else {
                                             alert(res.error);

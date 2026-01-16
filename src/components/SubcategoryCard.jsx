@@ -2,7 +2,8 @@ import React from 'react';
 import { Package, Folder } from 'lucide-react';
 
 export default function SubcategoryCard({ subcategory, productCount, products = [], onClick }) {
-    const cardColor = 'var(--accent-cyan)';
+    // Use custom color or default to cyan
+    const cardColor = subcategory.color || 'var(--accent-cyan)';
 
     // Get up to 4 preview items
     const previewItems = products.slice(0, 4);
@@ -13,62 +14,75 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
             className="product-card"
             style={{
                 padding: 0,
-                border: `1px solid ${cardColor}33`,
+                border: `2px solid ${cardColor}`, // Customizable Outline Color
                 background: 'var(--glass-bg)',
                 display: 'flex', flexDirection: 'column',
                 overflow: 'hidden',
                 cursor: 'pointer',
                 transition: 'transform 0.2s',
+                borderRadius: '16px'
             }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
             {/* Banner Area */}
             <div style={{
-                height: '100px',
+                height: '80px',
                 width: '100%',
                 background: subcategory.banner_url
                     ? `url(${subcategory.banner_url}) center/cover no-repeat`
                     : `linear-gradient(135deg, ${cardColor}44, transparent)`,
                 position: 'relative',
-                borderBottom: `1px solid ${cardColor}22`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                borderBottom: `1px solid ${cardColor}22`
             }}>
                 {/* Overlay for readability if banner exists */}
                 {subcategory.banner_url && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }} />}
 
-                {!subcategory.banner_url && <Folder size={48} color="rgba(255,255,255,0.2)" />}
-
-                {/* ICON Floating */}
+                {/* ICON: Left Aligned, Overlapping */}
                 <div className="product-icon" style={{
-                    width: '60px', height: '60px',
+                    width: '50px', height: '50px',
                     position: 'absolute',
-                    bottom: '-30px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: '#050508',
+                    bottom: '-25px', // Half overlap
+                    left: '20px', // Left aligned
+                    background: '#0a0a0f',
                     border: `2px solid ${cardColor}`,
-                    borderRadius: '16px',
+                    borderRadius: '12px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     zIndex: 2,
                     boxShadow: '0 5px 20px rgba(0,0,0,0.5)',
                 }}>
                     {subcategory.icon_url ? (
-                        <img src={subcategory.icon_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px' }} />
+                        <img src={subcategory.icon_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
                     ) : (
-                        <Package size={32} color={cardColor} />
+                        <div style={{ color: cardColor }}>
+                            <Folder size={24} />
+                        </div>
                     )}
+                </div>
+
+                {/* Badge Count Top Right */}
+                <div style={{
+                    position: 'absolute', top: '10px', right: '10px',
+                    background: 'rgba(0,0,0,0.6)',
+                    color: 'white',
+                    fontSize: '0.7rem',
+                    padding: '2px 8px',
+                    borderRadius: '8px',
+                    backdropFilter: 'blur(4px)',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                    {productCount} Produk
                 </div>
             </div>
 
             {/* Content */}
-            <div style={{ padding: '40px 20px 20px', textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{subcategory.name}</h3>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                    {productCount} Produk Tersedia
-                </p>
+            <div style={{ padding: '35px 15px 15px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.2rem', textAlign: 'left', marginLeft: '5px' }}>{subcategory.name}</h3>
+
+                {/* Product List Title */}
+                {/* <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', textAlign: 'left', marginLeft: '5px' }}>
+                    Pilihan Tersedia:
+                </p> */}
 
                 {/* Preview Section - Product List */}
                 {previewItems.length > 0 ? (
@@ -76,8 +90,8 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '0.5rem',
-                        marginBottom: '1.5rem',
-                        marginTop: 'auto',
+                        marginBottom: '1rem',
+                        marginTop: '1rem', // Spacing from title
                         width: '100%'
                     }}>
                         {previewItems.map((p, i) => (
