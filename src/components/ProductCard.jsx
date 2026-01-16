@@ -4,10 +4,10 @@ import ProductDetailModal from './ProductDetailModal';
 
 export default function ProductCard({
     id, title, price, price_numeric,
-    discount_percent, discount_deadline,
-    features, icon, color, description,
-    image_url, banner_url, screenshot_url, rules,
-    sold_count // Added sold_count
+    discount_percent = 0, discount_deadline,
+    features = [], icon, color, description,
+    image_url, banner_url, screenshot_url, rules = [],
+    sold_count = 0 // Default to 0 if undefined
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [timeLeft, setTimeLeft] = useState('');

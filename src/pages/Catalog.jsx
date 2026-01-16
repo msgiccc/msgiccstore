@@ -8,14 +8,15 @@ export default function Catalog() {
     const [activeTab, setActiveTab] = useState('All');
 
     // Added 'Flash Sale' to categories
-    const categories = ['All', 'Flash Sale', 'Streaming', 'Design', 'Editing', 'Music', 'Gaming', 'Other'];
+    const categories = ['All', 'Flash Sale', 'Streaming', 'Design', 'Editing', 'Music', 'Education', 'AI', 'Productivity', 'Gaming', 'Other'];
 
-    const filteredProducts = products.filter(p => {
+    const filteredProducts = (products || []).filter(p => {
+        if (!p) return false;
         if (activeTab === 'All') return true;
         if (activeTab === 'Flash Sale') {
             // Check if product has active discount
             const now = new Date();
-            const isDiscountActive = p.discount_percent > 0 &&
+            const isDiscountActive = (p.discount_percent || 0) > 0 &&
                 (!p.discount_deadline || new Date(p.discount_deadline) > now);
             return isDiscountActive;
         }
