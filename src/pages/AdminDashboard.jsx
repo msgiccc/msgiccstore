@@ -7,7 +7,7 @@ import SuccessPopup from '../components/SuccessPopup';
 import Modal from '../components/Modal';
 
 export default function AdminDashboard() {
-    const { products, addProduct, updateProduct, deleteProduct, updateVoucher, categories, addCategory, deleteCategory } = useProducts();
+    const { products, addProduct, updateProduct, deleteProduct, updateVoucher, categories, addCategory, deleteCategory, subcategories, addSubcategory, deleteSubcategory } = useProducts();
     const { logout } = useAuth();
     const [activeTab, setActiveTab] = useState('products'); // 'products', 'vouchers', 'categories'
 
@@ -19,6 +19,8 @@ export default function AdminDashboard() {
 
     // === CATEGORY FORM STATE ===
     const [newCategory, setNewCategory] = useState('');
+    const [newSubcategoryName, setNewSubcategoryName] = useState('');
+    const [newSubcategoryParent, setNewSubcategoryParent] = useState('');
 
     // === PRODUCT FORM STATE ===
     const [formData, setFormData] = useState({
@@ -29,7 +31,8 @@ export default function AdminDashboard() {
         color: '#ffffff',
         discount_percent: '',
         discount_deadline: '',
-        sold_count: 0
+        sold_count: 0,
+        subcategory_id: null
     });
 
     const [tags, setTags] = useState([]);
@@ -104,7 +107,8 @@ export default function AdminDashboard() {
             color: product.color,
             discount_percent: product.discount_percent || '',
             sold_count: product.sold_count || 0,
-            discount_deadline: formatForInput(product.discount_deadline)
+            discount_deadline: formatForInput(product.discount_deadline),
+            subcategory_id: product.subcategory_id || null
         });
         setTags(product.features || []);
         setRules(product.rules || []);
@@ -206,7 +210,7 @@ export default function AdminDashboard() {
             if (!isEdit) {
                 setFormData({
                     title: '', price_numeric: '', category: 'Streaming', description: '', color: '#ffffff',
-                    discount_percent: '', discount_deadline: '', sold_count: 0
+                    discount_percent: '', discount_deadline: '', sold_count: 0, subcategory_id: null
                 });
                 setTags([]);
                 setRules([]);
@@ -334,9 +338,23 @@ export default function AdminDashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: '1rem' }}>
                 <div>
                     <label style={labelStyle}>Kategori</label>
-                    <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} style={inputStyle}>
+                    <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value, subcategory_id: null })} style={inputStyle}>
                         <option value="" disabled>Pilih Kategori</option>
                         {categories.map(c => <option key={c.id} value={c.name} style={{ color: 'black' }}>{c.name}</option>)}
+                    </select>
+
+                    <label style={{ ...labelStyle, marginTop: '1rem' }}>Subkategori (Opsional)</label>
+                    <select
+                        value={formData.subcategory_id || ''}
+                        onChange={e => setFormData({ ...formData, subcategory_id: e.target.value ? parseInt(e.target.value) : null })}
+                        style={inputStyle}
+                        disabled={!formData.category}
+                    >
+                        <option value="">Tidak ada</option>
+                        {subcategories
+                            .filter(s => s.category === formData.category)
+                            .map(s => <option key={s.id} value={s.id} style={{ color: 'black' }}>{s.name}</option>)
+                        }
                     </select>
                 </div>
                 <div>
@@ -449,7 +467,83 @@ export default function AdminDashboard() {
                 <button onClick={() => setActiveTab('products')} className={`btn ${activeTab === 'products' ? 'btn-primary' : 'btn-secondary'}`}><List size={18} /> Produk</button>
                 <button onClick={() => setActiveTab('vouchers')} className={`btn ${activeTab === 'vouchers' ? 'btn-primary' : 'btn-secondary'}`}><Tag size={18} /> Voucher</button>
                 <button onClick={() => setActiveTab('categories')} className={`btn ${activeTab === 'categories' ? 'btn-primary' : 'btn-secondary'}`}><Tag size={18} /> Kategori</button>
+                <button onClick={() => setActiveTab('subcategories')} className={`btn ${activeTab === 'subcategories' ? 'btn-primary' : 'btn-secondary'}`}><List size={18} /> Subkategori</button>
             </div>
+
+            {activeTab === 'subcategories' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1.5fr', gap: '3rem', alignItems: 'start' }}>
+                    <div className="glass-panel" style={{ padding: '2rem' }}>
+                        <h2 style={{ marginBottom: '1.5rem' }}>Tambah Subkategori</h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div>
+                                <label style={labelStyle}>Induk Kategori</label>
+                                <select
+                                    value={newSubcategoryParent}
+                                    onChange={(e) => setNewSubcategoryParent(e.target.value)}
+                                    style={inputStyle}
+                                >
+                                    <option value="" disabled>Pilih Induk Kategori</option>
+                                    {categories.map(c => <option key={c.id} value={c.name} style={{ color: 'black' }}>{c.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Nama Subkategori</label>
+                                <input
+                                    type="text"
+                                    value={newSubcategoryName}
+                                    onChange={(e) => setNewSubcategoryName(e.target.value)}
+                                    placeholder="Contoh: Youtube, Spotify"
+                                    style={inputStyle}
+                                />
+                            </div>
+                            <button
+                                onClick={async () => {
+                                    if (newSubcategoryName.trim() && newSubcategoryParent) {
+                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent);
+                                        if (res.success) {
+                                            setNewSubcategoryName('');
+                                            setShowSuccess(true);
+                                        } else {
+                                            alert(res.error);
+                                        }
+                                    } else {
+                                        alert('Mohon lengkapi form');
+                                    }
+                                }}
+                                className="btn btn-primary"
+                                style={{ marginTop: '0.5rem', justifyContent: 'center' }}
+                            >
+                                <Plus size={18} /> Tambah Subkategori
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 style={{ marginBottom: '1.5rem' }}>Daftar Subkategori</h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                            {categories.map(cat => {
+                                const catSubs = subcategories.filter(s => s.category === cat.name);
+                                if (catSubs.length === 0) return null;
+                                return (
+                                    <div key={cat.id}>
+                                        <h4 style={{ color: 'var(--accent-cyan)', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem' }}>{cat.name}</h4>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                                            {catSubs.map(sub => (
+                                                <div key={sub.id} className="glass-panel" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <span style={{ fontWeight: 'bold' }}>{sub.name}</span>
+                                                    <button onClick={() => { if (window.confirm('Hapus subkategori?')) deleteSubcategory(sub.id) }} style={{ background: 'rgba(255,0,0,0.1)', color: 'red', border: 'none', padding: '0.5rem', borderRadius: '8px', cursor: 'pointer' }}>
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {activeTab === 'categories' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'start' }}>

@@ -9,7 +9,8 @@ export function useProducts() {
 
 export function ProductProvider({ children }) {
     const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]); // New Category State
+    const [categories, setCategories] = useState([]);
+    const [subcategories, setSubcategories] = useState([]); // New Subcategory State
     const [loading, setLoading] = useState(true);
 
     // Fetch products from Supabase
@@ -41,16 +42,30 @@ export function ProductProvider({ children }) {
             setCategories(data || []);
         } catch (err) {
             console.error('Error fetching categories:', err.message);
-            // Fallback if table doesn't exist yet or empty
             if (categories.length === 0) {
                 setCategories([{ id: 1, name: 'Streaming' }, { id: 2, name: 'Design' }, { id: 3, name: 'Other' }]);
             }
         }
     };
 
+    // Fetch Subcategories
+    const fetchSubcategories = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('subcategories')
+                .select('*')
+                .order('name', { ascending: true });
+            if (error) throw error;
+            setSubcategories(data || []);
+        } catch (err) {
+            console.error('Error fetching subcategories:', err.message);
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
         fetchCategories();
+        fetchSubcategories();
     }, []);
 
     // Add Product to Supabase
@@ -141,6 +156,32 @@ export function ProductProvider({ children }) {
         }
     };
 
+    // Subcategory CRUD
+    const addSubcategory = async (name, category, icon_url = null) => {
+        try {
+            const { data, error } = await supabase
+                .from('subcategories')
+                .insert([{ name, category, icon_url }])
+                .select();
+            if (error) throw error;
+            setSubcategories([...subcategories, data[0]]);
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    };
+
+    const deleteSubcategory = async (id) => {
+        try {
+            const { error } = await supabase.from('subcategories').delete().eq('id', id);
+            if (error) throw error;
+            setSubcategories(subcategories.filter(s => s.id !== id));
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    };
+
     // Verify Voucher
     const verifyVoucher = async (code, productId) => {
         try {
@@ -183,7 +224,8 @@ export function ProductProvider({ children }) {
         <ProductContext.Provider value={{
             products, addProduct, updateProduct, deleteProduct,
             verifyVoucher, updateVoucher, loading,
-            categories, addCategory, deleteCategory // Expose Categories
+            categories, addCategory, deleteCategory,
+            subcategories, addSubcategory, deleteSubcategory // Expose Subcategories
         }}>
             {children}
         </ProductContext.Provider>
