@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [newSubcategoryParent, setNewSubcategoryParent] = useState('');
     const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null);
-    const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null);
+
 
     // === PRODUCT FORM STATE ===
     const [formData, setFormData] = useState({
