@@ -452,6 +452,28 @@ export default function AdminDashboard() {
     );
 
 
+    // === PRODUCT FILTER & SORT STATE ===
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortOption, setSortOption] = useState('newest'); // newest, a-z, z-a, price-low, price-high, sold-high, sold-low
+    const [filterCategory, setFilterCategory] = useState('All');
+
+    // === DERIVED PRODUCTS ===
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = filterCategory === 'All' || product.category === filterCategory;
+        return matchesSearch && matchesCategory;
+    }).sort((a, b) => {
+        switch (sortOption) {
+            case 'a-z': return a.title.localeCompare(b.title);
+            case 'z-a': return b.title.localeCompare(a.title);
+            case 'price-low': return a.price_numeric - b.price_numeric;
+            case 'price-high': return b.price_numeric - a.price_numeric;
+            case 'sold-high': return (b.sold_count || 0) - (a.sold_count || 0);
+            case 'sold-low': return (a.sold_count || 0) - (b.sold_count || 0);
+            case 'newest': default: return new Date(b.created_at) - new Date(a.created_at);
+        }
+    });
+
     return (
         <div className="container" style={{ paddingTop: '120px', paddingBottom: '4rem' }}>
             <SuccessPopup isOpen={showSuccess} onClose={() => setShowSuccess(false)} message="Berhasil disimpan!" />
@@ -626,9 +648,49 @@ export default function AdminDashboard() {
                     </div>
 
                     <div>
-                        <h2 style={{ marginBottom: '1.5rem' }}>Daftar Produk ({products.length})</h2>
+                        <h2 style={{ marginBottom: '1.5rem' }}>Daftar Produk ({filteredProducts.length})</h2>
+
+                        {/* PRODUCT CONTROLS: SEARCH, SORT, FILTER */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                            {/* Row 1: Search */}
+                            <input
+                                type="text"
+                                placeholder="🔍 Cari nama produk..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                style={{ ...inputStyle, background: 'rgba(0,0,0,0.2)', borderColor: 'var(--accent-cyan)' }}
+                            />
+                            {/* Row 2: Sort & Filter */}
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <select
+                                    value={sortOption}
+                                    onChange={(e) => setSortOption(e.target.value)}
+                                    style={{ ...inputStyle, flex: 1, background: 'rgba(0,0,0,0.2)' }}
+                                >
+                                    <option value="newest" style={{ color: 'black' }}>📅 Terbaru</option>
+                                    <option value="a-z" style={{ color: 'black' }}>🔤 Nama (A-Z)</option>
+                                    <option value="z-a" style={{ color: 'black' }}>🔤 Nama (Z-A)</option>
+                                    <option value="price-low" style={{ color: 'black' }}>💰 Harga Terendah</option>
+                                    <option value="price-high" style={{ color: 'black' }}>💰 Harga Tertinggi</option>
+                                    <option value="sold-high" style={{ color: 'black' }}>🔥 Terlaris (Sold High)</option>
+                                    <option value="sold-low" style={{ color: 'black' }}>❄️ Penjualan Rendah</option>
+                                </select>
+
+                                <select
+                                    value={filterCategory}
+                                    onChange={(e) => setFilterCategory(e.target.value)}
+                                    style={{ ...inputStyle, flex: 1, background: 'rgba(0,0,0,0.2)' }}
+                                >
+                                    <option value="All" style={{ color: 'black' }}>📂 Semua Kategori</option>
+                                    {categories.map(c => (
+                                        <option key={c.id} value={c.name} style={{ color: 'black' }}>{c.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '1000px', overflowY: 'auto' }}>
-                            {products.map(product => (
+                            {filteredProducts.map(product => (
                                 <div key={product.id} className="glass-panel" style={{ padding: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                     {product.image_url ? (
                                         <img src={product.image_url} alt={product.title} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
@@ -638,6 +700,9 @@ export default function AdminDashboard() {
                                         <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
                                             Rp {product.price_numeric?.toLocaleString('id-ID') || '0'}
                                             {product.discount_percent > 0 ? <span style={{ color: 'var(--accent-pink)', marginLeft: '4px' }}>Disc {product.discount_percent}%</span> : ''}
+                                        </div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                                            {product.category} • {product.sold_count || 0} Terjual
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -650,6 +715,11 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
                             ))}
+                            {filteredProducts.length === 0 && (
+                                <div style={{ textAlign: 'center', padding: '2rem', opacity: 0.5 }}>
+                                    Tidak ada produk yang cocok.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
