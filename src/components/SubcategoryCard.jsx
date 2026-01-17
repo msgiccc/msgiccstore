@@ -33,6 +33,9 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
     // 3. Dynamic Icon Logic
     const majorityIconType = getMajority(products, 'iconType');
 
+    // 4. Dynamic Description (Majority)
+    const majorityDescription = getMajority(products, 'description');
+
     // Helper to get icon from type (Replicated from Catalog.jsx)
     const getIcon = (type) => {
         const imgStyle = { width: '100%', height: '100%', objectFit: 'contain', borderRadius: '10px' };
@@ -41,7 +44,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
             case 'canva': return <img src="/logos/canva.png" alt="Canva" style={imgStyle} />;
             case 'capcut': return <img src="/logos/capcut.png" alt="CapCut" style={imgStyle} />;
             case 'spotify': return <span style={{ fontSize: 32 }}>🎧</span>;
-            case 'youtube': return <span style={{ fontSize: 32 }}>▶️</span>; // Added Youtube generic
+            case 'youtube': return <span style={{ fontSize: 32 }}>▶️</span>;
             default: return null;
         }
     };
@@ -57,7 +60,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
             className="product-card"
             style={{
                 padding: 0,
-                border: `1px solid ${cardColor}33`, // Matches ProductCard (thinner, opacity)
+                border: `1px solid ${cardColor}33`,
                 background: 'var(--glass-bg)',
                 display: 'flex', flexDirection: 'column',
                 overflow: 'hidden',
@@ -70,7 +73,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
         >
             {/* Banner Area */}
             <div style={{
-                height: '100px', // Adjusted to match ProductCard
+                height: '100px',
                 width: '100%',
                 background: displayBanner
                     ? `url(${displayBanner}) center/cover no-repeat`
@@ -81,30 +84,31 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                 {/* Overlay for readability if banner exists */}
                 {displayBanner && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }} />}
 
-                {/* ICON: Left Aligned, Overlapping */}
+                {/* ICON: Left Aligned, Overlapping (MATCHING PRODUCT CARD) */}
                 <div className="product-icon" style={{
-                    width: '50px', height: '50px',
+                    width: '70px', height: '70px',
                     position: 'absolute',
-                    bottom: '-25px', // Half overlap
-                    left: '20px', // Left aligned
-                    background: '#0a0a0f',
+                    bottom: '-45px',
+                    left: '20px',
+                    background: '#050508',
                     border: `2px solid ${cardColor}`,
-                    borderRadius: '12px',
+                    borderRadius: '20px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     zIndex: 2,
                     boxShadow: '0 5px 20px rgba(0,0,0,0.5)',
+                    padding: '10px'
                 }}>
                     {subcategory.icon_url ? (
-                        <img src={subcategory.icon_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
+                        <img src={subcategory.icon_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
                     ) : (
                         majorIcon ? (
                             majorIcon
                         ) : (
                             products.length > 0 && products[0].image_url ? (
-                                <img src={products[0].image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
+                                <img src={products[0].image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
                             ) : (
                                 <div style={{ color: cardColor }}>
-                                    <Folder size={24} />
+                                    <Folder size={32} />
                                 </div>
                             )
                         )
@@ -126,14 +130,16 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                 </div>
             </div>
 
-            {/* Content */}
-            <div style={{ padding: '35px 15px 15px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.2rem', textAlign: 'left', marginLeft: '5px' }}>{subcategory.name}</h3>
+            {/* Content Body (MATCHING PRODUCT CARD PADDING/MARGIN) */}
+            <div style={{ padding: '20px', marginTop: '45px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1.4rem', marginBottom: '0.2rem', textAlign: 'left' }}>{subcategory.name}</h3>
 
-                {/* Product List Title */}
-                {/* <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', textAlign: 'left', marginLeft: '5px' }}>
-                    Pilihan Tersedia:
-                </p> */}
+                {/* Description (Added) */}
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem', minHeight: '40px', lineHeight: '1.4', textAlign: 'left' }}>
+                    {majorityDescription && majorityDescription.length > 60
+                        ? majorityDescription.substring(0, 60) + '...'
+                        : (majorityDescription || 'Lihat pilihan produk terbaik kami di kategori ini.')}
+                </p>
 
                 {/* Preview Section - Product List */}
                 {previewItems.length > 0 ? (
@@ -141,8 +147,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '0.4rem',
-                        marginBottom: '1rem',
-                        marginTop: '1.2rem',
+                        marginBottom: 'auto',
                         width: '100%'
                     }}>
                         {previewItems.map((p, i) => (
@@ -150,7 +155,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                 fontSize: '0.75rem',
                                 padding: '0.5rem 0.8rem',
-                                background: 'rgba(0,0,0,0.4)', // Darker background
+                                background: 'rgba(0,0,0,0.4)',
                                 borderRadius: '10px',
                                 border: '1px solid rgba(255,255,255,0.05)',
                                 color: 'rgba(255,255,255,0.8)'
@@ -170,20 +175,9 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                                 </span>
                             </div>
                         ))}
-                        {products.length > 4 && (
-                            <div style={{
-                                textAlign: 'center',
-                                fontSize: '0.7rem',
-                                color: 'var(--text-secondary)',
-                                marginTop: '0.2rem',
-                                fontStyle: 'italic'
-                            }}>
-                                +{products.length - 4} opsi lainnya
-                            </div>
-                        )}
                     </div>
                 ) : (
-                    <div style={{ marginBottom: '1.5rem', marginTop: 'auto', opacity: 0.5, fontSize: '0.8rem' }}>
+                    <div style={{ marginBottom: 'auto', opacity: 0.5, fontSize: '0.8rem' }}>
                         Belum ada produk
                     </div>
                 )}
@@ -192,15 +186,10 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
                 <button
                     className="btn btn-secondary"
                     style={{
-                        marginTop: 'auto',
-                        width: '100%',
-                        justifyContent: 'center',
-                        borderColor: cardColor,
-                        color: 'white',
+                        width: '100%', justifyContent: 'center', marginTop: '1.5rem',
+                        borderColor: cardColor, color: 'white',
                         background: `linear-gradient(90deg, ${cardColor}11, transparent)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem'
+                        display: 'flex', alignItems: 'center', gap: '0.5rem'
                     }}
                 >
                     <span>Lihat Pilihan</span> <ArrowRight size={16} />
