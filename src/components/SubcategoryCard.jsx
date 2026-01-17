@@ -21,11 +21,10 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
         return majorItem;
     };
 
-    // 1. Dynamic Color (Manual > Majority > Default)
+    // 1. Dynamic Color (Strictly Auto-Detected from Products)
+    // User requested to ignore manual admin color and always follow products
     const majorityColor = getMajority(products, 'color');
-    const cardColor = subcategory.color && subcategory.color !== '#00C8FF'
-        ? subcategory.color
-        : (majorityColor || 'var(--accent-cyan)');
+    const cardColor = majorityColor || 'var(--accent-cyan)';
 
     // 2. Dynamic Banner (Manual > Majority)
     const majorityBanner = getMajority(products, 'banner_url');
@@ -58,7 +57,7 @@ export default function SubcategoryCard({ subcategory, productCount, products = 
             className="product-card"
             style={{
                 padding: 0,
-                border: `2px solid ${cardColor}`, // Customizable Outline Color
+                border: `1px solid ${cardColor}33`, // Matches ProductCard (thinner, opacity)
                 background: 'var(--glass-bg)',
                 display: 'flex', flexDirection: 'column',
                 overflow: 'hidden',

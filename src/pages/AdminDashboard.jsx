@@ -510,18 +510,7 @@ export default function AdminDashboard() {
                                     style={fileInputStyle}
                                 />
                             </div>
-                            <div>
-                                <label style={labelStyle}>Warna Tema</label>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                    <input
-                                        type="color"
-                                        value={newSubcategoryColor}
-                                        onChange={(e) => setNewSubcategoryColor(e.target.value)}
-                                        style={{ width: '50px', height: '40px', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                                    />
-                                    <span style={{ color: 'var(--text-secondary)' }}>{newSubcategoryColor}</span>
-                                </div>
-                            </div>
+
                             <button
                                 onClick={async () => {
                                     if (newSubcategoryName.trim() && newSubcategoryParent) {
