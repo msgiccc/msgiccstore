@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [newSubcategoryParent, setNewSubcategoryParent] = useState('');
     const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null);
-    const [newSubcategoryColor, setNewSubcategoryColor] = useState('#00C8FF'); // New Color State
+    const [newSubcategoryBanner, setNewSubcategoryBanner] = useState(null);
 
     // === PRODUCT FORM STATE ===
     const [formData, setFormData] = useState({
@@ -524,11 +524,10 @@ export default function AdminDashboard() {
                                             }
                                         }
 
-                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent, null, bannerUrl, newSubcategoryColor);
+                                        const res = await addSubcategory(newSubcategoryName.trim(), newSubcategoryParent, null, bannerUrl);
                                         if (res.success) {
                                             setNewSubcategoryName('');
                                             setNewSubcategoryBanner(null);
-                                            setNewSubcategoryColor('#00C8FF');
                                             setShowSuccess(true);
                                         } else {
                                             alert(res.error);
